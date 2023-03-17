@@ -1,0 +1,27 @@
+     1                                 %line 1+1 array.asm
+     2                                 [section .data]
+     3 00000000 020000000300000005-     list dd 2,3,5,7,9,11
+     4 00000000 000000070000000900-
+     5 00000000 00000B000000       
+     6 00000018 0000                    sum dw 0
+     7 0000001A 0000                    avg dw 0
+     8                                 
+     9                                 [section .text]
+    10                                 [global _start]
+    11                                 
+    12                                 _start:
+    13 00000000 48C7C3[00000000]        mov rbx, list
+    14 00000007 48C7C600000000          mov rsi, 0
+    15 0000000E 48C7C106000000          mov rcx, 6
+    16 00000015 B800000000              mov eax, 0
+    17                                  lp:
+    18 0000001A 0304B3                  add eax, dword[rbx + rsi * 4]
+    19 0000001D 48FFC6                  inc rsi
+    20 00000020 E2F6                    loop lp
+    21 00000022 890425[00000000]        mov dword[sum], eax
+    22 00000029 48F7FE                  idiv rsi
+    23 0000002C 890425[00000000]        mov dword[avg], eax
+    24                                 
+    25 00000033 48C7C03C000000          mov rax, 60
+    26 0000003A 48C7C600000000          mov rsi, 0
+    27                                  sycalll

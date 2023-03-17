@@ -1,0 +1,35 @@
+     1                                 %line 1+1 doWhile.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13                                 
+    14                                 
+    15                                 
+    16                                 
+    17                                 
+    18                                 [section .data]
+    19 00000000 0000                    sum dw 0
+    20                                 
+    21                                 [section .text]
+    22                                 [global _start]
+    23                                 _start:
+    24 00000000 B101                    mov cl, 1
+    25                                  doloop:
+    26 00000002 0FB6C1                  movzx eax, cl
+    27 00000005 F6E1                    mul cl
+    28 00000007 66010425[00000000]      add [sum], ax
+    29 0000000F FEC1                    inc cl
+    30 00000011 80F90A                  cmp cl, 10
+    31 00000014 76EA                    jbe doloop
+    32                                 
+    33 00000016 48C7C03C000000          mov rax, 60
+    34 0000001D 48C7C700000000          mov rdi, 0
+    35 00000024 0F05                    syscall

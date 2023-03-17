@@ -1,0 +1,26 @@
+     1                                 %line 1+1 addition.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 
+     6                                 
+     7                                 
+     8                                 [section .data]
+     9 00000000 3075                    num1 dw 30000
+    10 00000002 409C                    num2 dw 40000
+    11 00000004 00000000                sum dd 0
+    12                                 
+    13                                 [section .text]
+    14                                 [global _start]
+    15                                 
+    16                                 _start:
+    17 00000000 66BA0000                mov dx , 0
+    18 00000004 668B0425[00000000]      mov ax, word[num1]
+    19 0000000C 66030425[00000000]      add ax, word[num2]
+    20 00000014 6683D200                adc dx, 0
+    21 00000018 66890425[00000000]      mov word[sum+0], ax
+    22 00000020 66891425[02000000]      mov word[sum+2], dx
+    23                                 
+    24 00000028 48C7C03C000000          mov rax, 60
+    25 0000002F 48C7C700000000          mov rdi, 0
+    26 00000036 0F05                    syscall

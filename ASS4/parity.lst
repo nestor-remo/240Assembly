@@ -1,0 +1,38 @@
+     1                                 %line 1+1 parity.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 [section .data]
+    12 00000000 4501                    num1 dw 325
+    13 00000002 00                      even db 0
+    14 00000003 00                      odd db 0
+    15                                 
+    16                                 [section .text]
+    17                                 [global _start]
+    18                                 _start:
+    19 00000000 668B0425[00000000]      mov ax, word[num1]
+    20 00000008 B302                    mov bl, 2
+    21 0000000A F6F3                    div bl
+    22 0000000C 80FC00                  cmp ah, 0
+    23 0000000F 7400                    je if_block
+    24 00000011 EB08                    jmp else_block
+    25                                 
+    26                                 if_block:
+    27 00000013 BB[00000000]            mov ebx, even
+    28 00000018 67FE03                  inc byte[ebx]
+    29 0000001B EB06                    jmp end_if
+    30                                 
+    31                                 else_block:
+    32 0000001D BB[00000000]            mov ebx, odd
+    33 00000022 67FE03                  inc byte[ebx]
+    34                                 
+    35                                 end_if:
+    36 00000025 48C7C03C000000          mov rax, 60
+    37 0000002C 48C7C700000000          mov rdi, 0
+    38 00000033 0F05                    syscall

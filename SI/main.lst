@@ -1,0 +1,39 @@
+     1                                 %line 1+1 main.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 [section .data]
+    12 00000000 0A00                    num dw 10
+    13 00000002 0000                    greater dw 0
+    14 00000004 0000                    less dw 0
+    15 00000006 0000                    between dw 0
+    16                                 
+    17                                 [section .text]
+    18                                 [global _start]
+    19                                 
+    20                                 _start:
+    21 00000000 8A0425[00000000]        mov al, byte[num]
+    22 00000007 3C32                    cmp al, 50
+    23 00000009 7E0A                    jle less_block
+    24 0000000B 3C3C                    cmp al, 60
+    25 0000000D 7D10                    jge great_block
+    26 0000000F 66FF0425[00000000]      inc word[between]
+    27                                 
+    28                                 less_block:
+    29 00000017 66FF0425[00000000]      inc word[less]
+    30 0000001F EB08                    jmp end_if
+    31                                 
+    32                                 great_block:
+    33 00000021 66FF0425[00000000]      inc word[greater]
+    34 00000029 EBFE                    jmp end_if
+    35                                 
+    36                                 end_if:
+    37 0000002B 48C7C03C000000          mov rax, 60
+    38 00000032 48C7C700000000          mov rdi, 0
+    39 00000039 0F05                    syscall
