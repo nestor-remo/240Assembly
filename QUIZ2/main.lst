@@ -1,0 +1,50 @@
+     1                                 %line 1+1 main.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13                                 
+    14                                 [section .data]
+    15 00000000 F4FFFFFF1700000022-     list dd -12, 23, 34, 45, -56, 67, -78, 89, 90, 0
+    16 00000000 0000002D000000C8FF-
+    17 00000000 FFFF43000000B2FFFF-
+    18 00000000 FF590000005A000000-
+    19 00000000 00000000           
+    20 00000028 0000                    posTotal dw 0
+    21 0000002A 0000                    negTotal dw 0
+    22                                 
+    23                                 [section .text]
+    24                                 [global _start]
+    25                                 
+    26                                 _start:
+    27 00000000 48C7C3[00000000]        mov rbx, list
+    28 00000007 48C7C600000000          mov rsi, 0
+    29 0000000E 48C7C10A000000          mov rcx, 10
+    30 00000015 B800000000              mov eax, 0
+    31                                  lp:
+    32 0000001A 8B04B3                  mov eax, dword[rbx + rsi * 4]
+    33 0000001D 83F800                  cmp eax, 0
+    34 00000020 7F05                    jg pos
+    35 00000022 83F800                  cmp eax, 0
+    36 00000025 7C0C                    jl min
+    37 00000027 7416                    je end
+    38                                  pos:
+    39 00000029 010425[00000000]        add dword[posTotal], eax
+    40 00000030 48FFC6                  inc rsi
+    41 00000033 E2E3                    loop lp
+    42                                  min:
+    43 00000035 010425[00000000]        add dword[negTotal], eax
+    44 0000003C 48FFC6                  inc rsi
+    45 0000003F E2D7                    loop lp
+    46                                 
+    47                                 end:
+    48 00000041 48C7C03C000000          mov rax, 60
+    49 00000048 48C7C600000000          mov rsi, 0
+    50 0000004F 0F05                    syscall
