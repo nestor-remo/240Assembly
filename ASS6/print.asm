@@ -9,22 +9,56 @@
 ; cout << str1 << ascii;
 
 section .data
-  str1  db "1 + 2 + 3 + ... + 100 = "
+  str1  db "1 + 2 + 3 +...+ 100 = "
   sum   dw  0
-  ascii dw "00", 100
+  ascii db "0000", 10
 
 section .text
   global _start
 
 _start:
-  mov cl, 1
+  mov cx, 1
 
-  doloop: 
-    add dword[sum], cl
-    inc cl
-    cmp cl, 100
+ doloop:
+    add word[sum], cx
+    inc cx
+    cmp cx, 100
     jbe doloop
-    
-  mov rax, 60
-  mov rsi, 0
-  syscall
+
+    mov ax, word[sum]
+    mov dx, 0
+    mov bx, 1000
+    div bx
+    add byte[ascii+0], al
+    mov ax, dx
+    mov dx, 0
+    mov bx, 100
+    div bx
+    add byte[ascii+1], al
+    mov ax, dx
+    mov dx, 0
+    mov bx, 10
+    div bx
+    add byte[ascii+2], al
+    mov ax, dx
+    mov dx, 0
+    mov bx, 1
+    div bx
+    add byte[ascii+3], al
+    mov byte[ascii+4], 10
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, str1
+    mov rdx, 22
+    syscall
+
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, ascii
+    mov rdx, 5
+    syscall
+
+    mov rax, 60
+    mov rsi, 0
+    syscall
