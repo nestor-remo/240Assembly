@@ -1,0 +1,106 @@
+     1                                 %line 1+1 input.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13                                 
+    14                                 
+    15                                 
+    16                                 
+    17                                 
+    18                                 
+    19                                 
+    20                                 
+    21                                 
+    22                                 
+    23                                 [section .bss]
+    24 00000000 <gap>                   num resb 1
+    25 00000001 <gap>                   buffer resb 2
+    26 00000003 <gap>                   ascii resb 10
+    27                                 
+    28                                 [section .data]
+    29 00000000 496E7075742061206E-     msg1 db "Input a number (1~9): ", 10, 0
+    30 00000000 756D6265722028317E-
+    31 00000000 39293A200A00       
+    32 00000018 4D756C7469706C6520-     msg2 db "Multiple of 3 include: ", 10, 0
+    33 00000018 6F66203320696E636C-
+    34 00000018 7564653A200A00     
+    35                                 
+    36                                 [section .text]
+    37                                 [global _start]
+    38                                 
+    39                                 _start:
+    40 00000000 49C7C200000000          mov r10, 0
+    41                                 
+    42                                  doloop:
+    43 00000007 48C7C001000000          mov rax, 1
+    44 0000000E 48C7C701000000          mov rdi, 1
+    45 00000015 48C7C6[00000000]        mov rsi, msg1
+    46 0000001C 48C7C216000000          mov rdx, 22
+    47 00000023 0F05                    syscall
+    48                                 
+    49 00000025 48C7C000000000          mov rax, 0
+    50 0000002C 48C7C700000000          mov rdi, 0
+    51 00000033 48C7C6[00000000]        mov rsi, buffer
+    52 0000003A 48C7C202000000          mov rdx, 2
+    53 00000041 0F05                    syscall
+    54                                 
+    55 00000043 408A3425[00000000]      mov sil, byte[buffer]
+    56 0000004B 4188B2[00000000]        mov byte[ascii+r10], sil
+    57                                 
+    58 00000052 49FFC2                  inc r10
+    59 00000055 4983FA09                cmp r10, 9
+    60 00000059 7CAA                    jl doloop
+    61                                 
+    62 0000005B 49C7C200000000          mov r10, 0
+    63                                 
+    64                                 doloop2:
+    65 00000062 418A82[00000000]        mov al, byte[ascii+r10]
+    66 00000069 240F                    and al, 0f
+    67 0000006B 880425[00000000]        mov byte[num], al
+    68                                 
+    69 00000072 B400                    mov ah, 0
+    70 00000074 8A0425[00000000]        mov al, byte[num]
+    71 0000007B B303                    mov bl, 3
+    72 0000007D F6F3                    div bl
+    73 0000007F 80FC00                  cmp ah, 0
+    74 00000082 7407                    je divisible
+    75                                 
+    76 00000084 49FFC2                  inc r10
+    77 00000087 4983FA09                cmp r10, 9
+    78 0000008B 7CD3                    jl doloop2
+    79                                 
+    80                                 divisible:
+    81 0000008D 48C7C001000000          mov rax, 1
+    82 00000094 48C7C701000000          mov rdi, 1
+    83 0000009B 48C7C6[00000000]        mov rsi, msg2
+    84 000000A2 48C7C217000000          mov rdx, 23
+    85 000000A9 0F05                    syscall
+    86                                 
+    87 000000AB 48C7C001000000          mov rax, 1
+    88 000000B2 48C7C701000000          mov rdi, 1
+    89 000000B9 498DB2[00000000]        lea rsi, byte[ascii+r10]
+    90 000000C0 48C7C201000000          mov rdx, 1
+    91 000000C7 0F05                    syscall
+    92                                 
+    93 000000C9 48C7C001000000          mov rax, 1
+    94 000000D0 48C7C701000000          mov rdi, 1
+    95 000000D7 C60425[00000000]0A      mov byte[ascii], 10
+    96 000000DF 48C7C6[00000000]        mov rsi, ascii
+    97 000000E6 48C7C201000000          mov rdx, 1
+    98 000000ED 0F05                    syscall
+    99                                 
+   100 000000EF 49FFC2                  inc r10
+   101 000000F2 4983FA09                cmp r10, 9
+   102 000000F6 0F8C60FFFFFF            jl doloop2
+   103                                 
+   104 000000FC 48C7C03C000000          mov rax, 60
+   105 00000103 48C7C700000000          mov rdi, 0
+   106 0000010A 0F05                    syscall

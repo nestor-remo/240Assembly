@@ -24,7 +24,7 @@ _start:
   doloop:
         movzx   eax, cl
         mul     cl
-        add     [sum], ax
+        add     byte[sum], ax
         inc     cl
         cmp     cl, 10
         jbe     doloop
