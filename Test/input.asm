@@ -1,108 +1,232 @@
-; ex7_cinNum3.asm
-; char num;
-; char buffer;
-; char ascii[10];
-; char mesg[] = Input a number (0~9): ";
-; char even[] = " is an even number\n";
-; char odd[] = " is an odd number\n";
-; register long r10 = 0;
-; do {
-; 	cout << "Input a number (0~9): ";
-; 	cin >> buffer;
-;	ascii[r10] = buffer;
-;	r10++;
-; } while (r10 <= 8);
-; r10 =0;
-; do {
-; 	num = atoi(ascii[r10]);
-; 	if(num%2 == 0)
-;   	    cout << num << " is an even number\n";
-; 	else
-;   	    cout << num << " is an odd number\n";
-;	r10++;
-; } while(r10 <=8);
+%macro print 2
+mov rax, 1
+mov rdi, 1
+mov rsi, %1
+mov rdx, %2
+syscall
+%endmacro
 
-section .bss
-        num     resb    1					;reserve 1-byte for num
-	buffer	resb	2					;reserve 1-byte for buffer
-	ascii	resb	10
+%macro scan 2
+mov rax, 0
+mov rdi, 0
+mov rsi, %1
+mov rdx, %2
+syscall
+%endmacro
 
 section .data
-	mesg	db	"Input a number (0~9): "		;input message
-        even    db      " is an even number", 10                ;even message
-        odd     db      " is an odd number", 10                 ;odd message
+	prompt db "Enter Operations String: "
+	ascii db "000", 10
+	equal db " = "
+
+section .bss
+	buffer resb 50
 
 section .text
-        global _start
+	global _start
+
 _start:
-	mov	r10, 0
-next1:
-	; cout << mesg
-        mov     rax, 1						;SYS_write
-        mov     rdi, 1						;write to STD_OUT
-        mov     rsi, mesg					;address of mesg
-        mov     rdx, 22						;22 character to write
-        syscall							;calling system services
+	; Print prompt
+	print prompt, 25
 
-	; cin >> num
-	mov	rax, 0						;SYS_read
-	mov	rdi, 0						;read from STD_IN
-	mov	rsi, buffer					;address of the buffer
-	mov	rdx, 2						;input length = 1
-	syscall							;calling system services
+	; Read Input from user
+	scan buffer, 50
+	print buffer, 50
 
-	mov	sil, byte[buffer]
-	mov	byte[ascii+r10], sil
-	inc	r10
-	cmp 	r10, 8
-	jbe	next1
+	; Evaluate expression
+	mov eax, 0
+	mov bl, '+'
+	mov rsi, buffer
 
-	mov	r10, 0
+parse_loop:
+	cmp byte [rsi], 0
+	je print_result
+
+	cmp byte [rsi], '+'
+	je set_addition
+
+	cmp byte [rsi], '-'
+	je set_subtraction
+
+	cmp byte [rsi], '*'
+	je set_multiplication
+
+	cmp byte [rsi], '/'
+	je set_division
+
+	and byte [rsi], 0fh
+
+	cmp bl, '+'
+	je add_number
+	cmp bl, '-'
+	je sub_number
+	cmp bl, '*'
+	je mul_number
+	cmp bl, '/'
+	je div_number
+	jmp print_result
+
+add_number:
+	add al, byte[rsi]
+	jmp next_char
+
+sub_number:
+	sub al, byte [rsi]
+	jmp next_char
+
+mul_number:
+	mul byte [rsi]
+	jmp next_char
+
+div_number:
+	mov edx, 0
+	div byte [rsi]
+	jmp next_char
+
+set_addition:
+	mov bl, '+'
+	jmp next_char
+
+set_subtraction:
+	mov bl, '-'
+	jmp next_char
+
+set_multiplication:
+	mov bl, '+'
+	jmp next_char
+
+set_division:
+	mov bl, '/'
+	jmp next_char
+... (26 lines left)
+Collapse
+finalog2.0.txt
+2 KB
+nestiray — Today at 10:56 PM
+ty ty
+﻿
+%macro print 2
+mov rax, 1
+mov rdi, 1
+mov rsi, %1
+mov rdx, %2
+syscall
+%endmacro
+
+%macro scan 2
+mov rax, 0
+mov rdi, 0
+mov rsi, %1
+mov rdx, %2
+syscall
+%endmacro
+
+section .data
+	prompt db "Enter Operations String: "
+	ascii db "000", 10
+	equal db " = "
+
+section .bss
+	buffer resb 50
+
+section .text
+	global _start
+
+_start:
+	; Print prompt
+	print prompt, 25
+
+	; Read Input from user
+	scan buffer, 50
+	print buffer, 50
+
+	; Evaluate expression
+	mov eax, 0
+	mov bl, '+'
+	mov rsi, buffer
+
+parse_loop:
+	cmp byte [rsi], 0
+	je print_result
+
+	cmp byte [rsi], '+'
+	je set_addition
+
+	cmp byte [rsi], '-'
+	je set_subtraction
+
+	cmp byte [rsi], '*'
+	je set_multiplication
+
+	cmp byte [rsi], '/'
+	je set_division
+
+	and byte [rsi], 0fh
+
+	cmp bl, '+'
+	je add_number
+	cmp bl, '-'
+	je sub_number
+	cmp bl, '*'
+	je mul_number
+	cmp bl, '/'
+	je div_number
+	jmp print_result
+
+add_number:
+	add al, byte[rsi]
+	jmp next_char
+
+sub_number:
+	sub al, byte [rsi]
+	jmp next_char
+
+mul_number:
+	mul byte [rsi]
+	jmp next_char
+
+div_number:
+	mov edx, 0
+	div byte [rsi]
+	jmp next_char
+
+set_addition:
+	mov bl, '+'
+	jmp next_char
+
+set_subtraction:
+	mov bl, '-'
+	jmp next_char
+
+set_multiplication:
+	mov bl, '+'
+	jmp next_char
+
+set_division:
+	mov bl, '/'
+	jmp next_char
+
+next_char:
+	inc rsi
+	jmp parse_loop
+
+print_result:
+	; Convert result to ASCII
+	mov rcx, 2
+	mov bx, 10
 next2:
-	mov	al, byte[ascii+r10]				;al = buffer (ex: '5'=35h)
-	and	al, 0fh						;al = block bit7~4 (ex: 05h)
-	mov	byte[num], al					;num = al (ex: num=05h)
+	xor rdx, rdx
+	div bx
+	add byte[ascii+rcx], dl
+	dec rcx
+	cmp rcx, 0
+	jge next2
 
-	; if(num%2 == 0)
-        mov     ah,0                                            ;ah=0
-        mov     al, byte[num]                                   ;al=num
-        mov     bl, 2                                           ;bl=2
-        div     bl                                              ;ah=ax%bl, al=ax/bl
-        cmp     ah, 0                                           ;compare ah,0
-        jnz     odd_num                                         ;if(rem!=0) goto odd_num
-	; cout << num
-        mov     rax, 1						;SYS_write
-        mov     rdi, 1						;where to write
-        lea     rsi, byte[ascii+r10]				;address of ascii[r10]
-        mov     rdx, 1						;1 character to write
-        syscall							;calling system services
-	; cout << even
-        mov     rax, 1						;SYS_write
-        mov     rdi, 1						;where to write
-        mov     rsi, even					;address of num
-        mov     rdx, 19						;18 character to write
-        syscall							;calling system services
-	jmp	skip						;jump to done
-	; else
-odd_num:
-	; cout << num
-        mov     rax, 1						;SYS_write
-        mov     rdi, 1						;where to write
-        lea     rsi, byte[ascii+r10]				;address of ascii[r10]
-        mov     rdx, 1						;1 character to write
-        syscall							;calling system services
-	; cout << odd
-        mov     rax, 1						;SYS_write
-        mov     rdi, 1						;where to write
-        mov     rsi, odd					;address of odd
-        mov     rdx, 18						;17 character to write
-        syscall							;calling system services
-skip:
-	inc	r10
-	cmp	r10, 8
-	jbe	next2
+	print equal, 3
 
-done:
-        mov     rax, 60                                         ;terminate excuting process
-        mov     rdi, 0                                          ;exit status
-        syscall
+	print ascii+2, 2
+
+end:
+	mov rax, 60
+	mov rdi, 0
+	syscall

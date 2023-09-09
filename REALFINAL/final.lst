@@ -1,0 +1,116 @@
+     1                                 %line 8+1 final.asm
+     2                                 
+     3                                 %line 16+1 final.asm
+     4                                 
+     5                                 [section .bss]
+     6 00000000 <gap>                   num1 resb 1
+     7 00000001 <gap>                   num2 resb 1
+     8 00000002 <gap>                   result resb 1
+     9 00000003 <gap>                   buffer resb 2
+    10                                 
+    11                                 [section .data]
+    12 00000000 496E70757420317374-     msg1 db "Input 1st number (0~9): "
+    13 00000000 206E756D6265722028-
+    14 00000000 307E39293A20       
+    15 00000018 496E70757420326E64-     msg2 db "Input 2nd number (0~9): "
+    16 00000018 206E756D6265722028-
+    17 00000018 307E39293A20       
+    18 00000030 4D756C7469706C6963-     msg3 db "Multiplication result : "
+    19 00000030 6174696F6E20726573-
+    20 00000030 756C74203A20       
+    21 00000048 30300A                  ascii db "00", 10
+    22                                 
+    23                                 [section .text]
+    24                                 [global _start]
+    25                                 
+    26                                 _start:
+    27 00000000 48C7C3[00000000]        mov rbx, msg1
+    28 00000007 E8B5000000              call toNumber
+    29 0000000C 880425[00000000]        mov byte[num1], al
+    30                                 
+    31 00000013 48C7C3[00000000]        mov rbx, msg2
+    32 0000001A E8A2000000              call toNumber
+    33 0000001F 880425[00000000]        mov byte[num2], al
+    34                                 
+    35 00000026 8A0425[00000000]        mov al, byte[num1]
+    36 0000002D 8A1C25[00000000]        mov bl, byte[num2]
+    37 00000034 E885000000              call multiplication
+    38 00000039 880425[00000000]        mov byte[result], al
+    39                                 
+    40 00000040 668B3C25[00000000]      mov di, [result]
+    41 00000048 E8D6000000              call toAscii
+    42 0000004D 48C7C001000000          mov rax, 1
+    43                                 %line 48+0 final.asm
+    44 00000054 48C7C701000000          mov rdi, 1
+    45 0000005B 48C7C6[00000000]        mov rsi, msg3
+    46 00000062 48C7C218000000          mov rdx, 24
+    47 00000069 0F05                    syscall
+    48                                 %line 49+1 final.asm
+    49 0000006B 803C25[00000000]0A      cmp byte[result], 10
+    50 00000073 721E                    jb greater
+    51 00000075 48C7C001000000          mov rax, 1
+    52                                 %line 51+0 final.asm
+    53 0000007C 48C7C701000000          mov rdi, 1
+    54 00000083 48C7C6[00000000]        mov rsi, ascii
+    55 0000008A 48C7C203000000          mov rdx, 3
+    56 00000091 0F05                    syscall
+    57                                 %line 52+1 final.asm
+    58 00000093 EB1C                    jmp end
+    59                                 
+    60                                 greater:
+    61 00000095 48C7C001000000          mov rax, 1
+    62                                 %line 55+0 final.asm
+    63 0000009C 48C7C701000000          mov rdi, 1
+    64 000000A3 48C7C6[01000000]        mov rsi, ascii+1
+    65 000000AA 48C7C202000000          mov rdx, 2
+    66 000000B1 0F05                    syscall
+    67                                 %line 56+1 final.asm
+    68                                 
+    69                                 end:
+    70 000000B3 48C7C03C000000          mov rax, 60
+    71 000000BA 48C7C700000000          mov rdi, 0
+    72 000000C1 0F05                    syscall
+    73                                 
+    74                                 multiplication:
+    75 000000C3 F6E3                    mul bl
+    76 000000C5 C3                      ret
+    77                                 
+    78                                 toNumber:
+    79                                  lp:
+    80 000000C6 4889DF                  mov rdi, rbx
+    81 000000C9 48C7C618000000          mov rsi, 24
+    82 000000D0 48C7C001000000          mov rax, 1
+    83                                 %line 70+0 final.asm
+    84 000000D7 48C7C701000000          mov rdi, 1
+    85 000000DE 4889FE                  mov rsi, rdi
+    86 000000E1 4889F2                  mov rdx, rsi
+    87 000000E4 0F05                    syscall
+    88                                 %line 71+1 final.asm
+    89 000000E6 48C7C3[00000000]        mov rbx, buffer
+    90 000000ED 48C7C602000000          mov rsi, 2
+    91 000000F4 48C7C000000000          mov rax, 0
+    92                                 %line 73+0 final.asm
+    93 000000FB 48C7C700000000          mov rdi, 0
+    94 00000102 4889DE                  mov rsi, rbx
+    95 00000105 4889F2                  mov rdx, rsi
+    96 00000108 0F05                    syscall
+    97                                 %line 74+1 final.asm
+    98 0000010A 803C25[00000000]30      cmp byte[buffer], '0'
+    99 00000112 72B0                    jb lp
+   100 00000114 803C25[00000000]39      cmp byte[buffer], '9'
+   101 0000011C 77A6                    ja lp
+   102 0000011E 8A0425[00000000]        mov al, byte[buffer]
+   103 00000125 2C30                    sub al, '0'
+   104 00000127 C3                      ret
+   105                                 
+   106                                 toAscii:
+   107 00000128 6689F8                  mov ax, di
+   108 0000012B 66BB0A00                mov bx, 10
+   109                                 next2:
+   110 0000012F 66BA0000                mov dx, 0
+   111 00000133 66F7F3                  div bx
+   112 00000136 0091[00000000]          add byte[ascii+rcx], dl
+   113 0000013C 66FFC9                  dec cx
+   114 0000013F 6683F900                cmp cx, 0
+   115 00000143 7DE8                    jge next2
+   116 00000145 C3                      ret
